@@ -239,3 +239,198 @@ SELECT *
 FROM EMPLOYEE
 --WHERE HIRE_DATE >= '90/01/01' AND HIRE_DATE <= '01/01/01'; --DATE 타입끼리도 대소비교 연산 가능
 WHERE HIRE_DATE BETWEEN '90/01/01' AND '01/01/01';
+
+----------------------------------------------------------------------------
+
+/*
+    < LIKE >
+    비교하고자하는 컬럼값이 내가 제시한 특정 패턴에 만족될 경우 조회
+    
+    [표현법]
+    비교대상칼럼 LIKE '특정패턴'
+    
+    - 특정패턴 제시시 '%' '_'를 사용할 수 있음 (와일드카드)
+    >> '%' : 0글자 이상
+    EX) 비교대상컬럼 LIKE '문자%' => 비교대상의 컬럼값이 해당 문자로 '시작'될 경우 조회
+        비교대상컬럼 LIKE '%문자' => 비교대상의 컬럼값이 해당 문자로 '끝'날 경우 조회
+        비교대상컬럼 LIKE '%문자%' => 비교대상의 컬럼값에 해당 문자가 "포함"되어있을 경우 조회 (키워드 검색**)
+        
+    >> '_' : 1글자
+    EX) 비교대상컬럼 LIKE '_문자'   => 비교대상의 컬럼값이 어떠한 "한 글자"뒤에 해당 문자가 올 경우 조회
+        비교대상컬럼 LIKE '__문자'  => 비교대상의 컬럼값이 어떠한 "두 글자"뒤에 해당 문자가 올 경우 조회
+        
+*/
+
+-- 사원들 중 성이 전씨인 사원들의 사원명, 급여, 입사일 조회
+SELECT EMP_NAME, SALARY, HIRE_DATE
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE '전%'; 
+
+-- 이름 중에 '하'가 포함되어 있는 사원들의 사원명, 주민번호, 전화번호 조회
+SELECT EMP_NAME, EMP_NO, PHONE
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE '%하%';
+
+-- 이름의 가운데 글자가 하 인 사원들의 사원명, 전화번호 조회
+SELECT EMP_NAME, PHONE
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE '_하_';
+
+-- 전화번호의 3번째 자리가 1인 사원들의 사번, 사원명, 전화번호 이메일 조회
+SELECT EMP_ID, EMP_NAME, PHONE, EMAIL
+FROM EMPLOYEE
+WHERE PHONE LIKE '__1%';
+
+-- 이메일 중 _앞글자가 3글자인(이메일의 4번째 자리가 _인) 사원들의 사번, 사원명, 이메일 조회
+-- EX)sum_di@br.com, yoo_js@br.com
+SELECT EMP_NAME, EMP_NAME, EMAIL
+FROM EMPLOYEE
+WHERE EMAIL LIKE '____%';
+-- 와일드 카드랑 컬럼값에 담긴 문자가 동일하기 때문에 제대로 조회 안됨(다 와일드카드로 인식해버림)
+--> 어떤게 와일드 카드고 어떤게 데이터값인지 구분지어야됨
+SELECT EMP_NAME, EMP_NAME, EMAIL
+FROM EMPLOYEE
+WHERE EMAIL LIKE '___$_%' ESCAPE'$';
+--> 데이터값을 취급하고자하는 값 앞에 나만의 와일드 카드를 제시하고 ESCAPE OPTION으로 나만의 와일드카드로 등록
+
+-- 위의 사원들이 아닌 그 외의 사원들 조회
+SELECT EMP_NAME, EMP_NAME, EMAIL
+FROM EMPLOYEE
+WHERE NOT EMAIL LIKE '___$_%' ESCAPE'$';
+-- NOT은 컬럼명 앞 또는 LIKE 앞에 기입 가능
+
+--------------------------------- 실습문제 ----------------------------------
+-- 1. 사원들 중에 이름이 '연'으로 끝나는 사원들의 사원명, 입사일 조회
+SELECT EMP_NAME, HIRE_DATE
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE '%연';
+-- 2. 전화번호 처음 3자리가 010이 아닌 사원들의 사원명, 전화번호 조회
+SELECT EMP_NAME, PHONE
+FROM EMPLOYEE
+WHERE PHONE LIKE '010%';
+-- 3. 이름에 '하'가 포함되어있고 급여가 240만원 이상인 사원들의 사원명, 급여 조회
+SELECT EMP_NAME, SALARY
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE '%하%' AND SALARY >= 2400000;
+-- 4. DEPARTMENT에서 해외영업부인 부서들의 부서코드, 부서명 조회
+SELECT DEPT_ID, DEPT_TITLE
+FROM DEPARTMENT
+WHERE DEPT_TITLE LIKE '해외영업%';
+
+------------------------------------------------------------------------------
+
+/*
+    < IS NULL / IS NOT NULL >
+    컬럼값에 NULL이 있을 경우 NULL값 비교할 때 사용되는 연산자
+    
+*/
+-- 보너스를 받지 않는 사원(BONUS값이 NULL)들의 사번, 이름, 급여, 보너스 조회
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+--WHERE BONUS = NULL; -- 정상조회가 안됨
+WHERE BONUS IS NULL;
+
+-- 보너스를 받는 사원(BONUS값이 NULL이 아닌)
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+--WHERE BONUS != NULL; -- 정상조회가 안됨
+--WHERE BONUS IS NOT NULL; -- 정상조회
+WHERE NOT BONUS IS NULL; -- 정상조회
+
+-- 사수가 없는 사원들의 사원명, 사수사번, 부서코드 조회
+SELECT EMP_NAME, MANAGER_ID, DEPT_CODE
+FROM EMPLOYEE
+WHERE MANAGER_ID IS NULL;
+
+-- 부서배치를 아직 받지 않고 근데 보너스는 받는 사원들의 이름, 보너스, 부서코드 조회
+SELECT EMP_NAME, BONUS, DEPT_CODE
+FROM EMPLOYEE
+WHERE DEPT_CODE IS NULL AND BONUS IS NOT NULL;
+
+-------------------------------------------------------------------------------
+
+/*
+    < IN >
+    비교대상컬럼값이 내가 제시한 목록중에 일치하는 값이 있는지
+    
+    [표현법]
+    비교대상컬럼 IN ('값1', '값2', '값3'...)
+    
+*/
+
+-- 부서코드가 D6이거나 D8이거나 D5인 부서원들의 이름, 부서코드, 급여 조회
+SELECT EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+--WHERE DEPT_CODE = 'D6' OR DEPT_CODE = 'D8' OR DEPT_CODE = 'D5';
+WHERE DEPT_CODE IN ('D6','D8','D5'); -- 12
+
+-- 그 외의 사원들
+SELECT EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+--WHERE DEPT_CODE != 'D6' AND DEPT CODE != 'D8' AND DEPT_CODE != 'D5';
+WHERE DEPT_CODE NOT IN ('D6', 'D8', 'D5');
+
+------------------------------------------------------------------------------
+
+-- 직급코드가 J7이거나 J2인 사원들 중 급여가 200만원 이상인 사원들의 모든 컬럼 조회
+SELECT *
+FROM EMPLOYEE
+WHERE JOB_CODE = 'J7' OR JOB_CODE = 'J2' AND SALARY >= 2000000;
+-- ** OR보다 AND가 먼저 연산됨
+
+/*
+    < 연산자 우선순위 >
+    0. ()
+    1. 산술연산자
+    2. 연결연산자
+    3. 비교연산자
+    4. IS NULL / LIKE '특정패턴' / IN
+    5. BETWEEN AND
+    6. NOT(논리연산자)
+    7. AND(논리연산자)
+    8. OR(논리연산자)
+    
+*/
+
+-- =======================================================================
+
+/*
+    * ORDER BY 절
+    SELECT문 가장 마지막 줄에 작성 뿐만 아니라 실행순서 또한 마지막에 실행
+
+    [표현법]
+    SELECT 조회할컬럼, 컬럼, 산술연산식 [AS] "별칭"...
+    FROM 조회하고자하는테이블명
+    WHERE 조건식
+    ORDER BY 정렬기준의컬럼명|별칭|컬럼순번 [ASC|DESC] [NULLS FIRST | NULLS LAST]
+    
+    - ASC : 오름차순 정렬 (생략시 기본값)
+    - DESC : 내림차순 정렬 
+    
+    - NULLS FIRST : 정렬하고자하는 컬럼값에 NULL이 있을 경우 해당 데이터를 앞에 배치 (생략시 DESC일 때의 기본값)
+    -       LAST :                                      해당 데이터를 뒤에 배치 (생략시 ASC일 때의 기본값)
+    
+    ** 실행(해석)되는 순서 **
+    1. FROM 절
+    2. WHERE 절
+    3. SELECT 절
+    4. ORDER BY 절
+
+*/
+
+SELECT *
+FROM EMPLOYEE
+--ORDER BY BONUS;
+--ORDER BY BONUS ASC; -- 오름차순일때 NULLS LAST
+--ORDER BY BONUS ASC NULLS FIRST;
+--ORDER BY BONUS DESC; -- 내림차순일때 NULLS FIRST
+ORDER BY BONUS DESC, SALARY ASC; -- 여러개 제시 가능 (첫번째 기준의 컬럼값이 동일 할 경우 두번째 기준의 컬럼가지고 정렬)
+
+-- 전 사원의 사원명, 연봉 조회 (이때 연봉별 내림차순 정렬 조회)
+SELECT EMP_NAME, SALARY * 12 "연봉"
+FROM EMPLOYEE
+--ORDER BY SALARY * 12 DESC; -- 산술연산식 가능
+--ORDER BY 연봉 DESC; -- 별칭 사용 가능
+ORDER BY 2 DESC; -- 컬럼순번 사용 가능
+
+
