@@ -1,6 +1,8 @@
 --------------- SELECT 기본문법 실습문제 ----------------------
 -- 1. COMM(커미션)컬럼값이 NULL이 아닌 직원의 정보 조회
-
+SELECT *
+FROM BONUS
+WHERE COMM IS NOT NULL;
 
 -- 2. 커미션을 받지 못하는 직원 정보 조회
 
