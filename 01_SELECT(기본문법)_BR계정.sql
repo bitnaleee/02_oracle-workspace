@@ -261,6 +261,7 @@ WHERE HIRE_DATE BETWEEN '90/01/01' AND '01/01/01';
         
 */
 
+
 -- 사원들 중 성이 전씨인 사원들의 사원명, 급여, 입사일 조회
 SELECT EMP_NAME, SALARY, HIRE_DATE
 FROM EMPLOYEE
@@ -307,7 +308,7 @@ WHERE EMP_NAME LIKE '%연';
 -- 2. 전화번호 처음 3자리가 010이 아닌 사원들의 사원명, 전화번호 조회
 SELECT EMP_NAME, PHONE
 FROM EMPLOYEE
-WHERE PHONE LIKE '010%';
+WHERE PHONE NOT LIKE '010%';
 -- 3. 이름에 '하'가 포함되어있고 급여가 240만원 이상인 사원들의 사원명, 급여 조회
 SELECT EMP_NAME, SALARY
 FROM EMPLOYEE
@@ -375,7 +376,7 @@ WHERE DEPT_CODE NOT IN ('D6', 'D8', 'D5');
 -- 직급코드가 J7이거나 J2인 사원들 중 급여가 200만원 이상인 사원들의 모든 컬럼 조회
 SELECT *
 FROM EMPLOYEE
-WHERE JOB_CODE = 'J7' OR JOB_CODE = 'J2' AND SALARY >= 2000000;
+WHERE (JOB_CODE = 'J7' OR JOB_CODE = 'J2') AND SALARY >= 2000000;
 -- ** OR보다 AND가 먼저 연산됨
 
 /*
