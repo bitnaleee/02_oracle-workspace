@@ -5,23 +5,23 @@
 */
 
 -- 간단 서브쿼리 예시1.
--- 노옹철 사원과 같은 부서에 속한 사원들 조회
--- 1) 먼저 노옹철 사원의 부서코드 조회
+-- 하이유 사원과 같은 부서에 속한 사원들 조회
+-- 1) 먼저 하이유 사원의 부서코드 조회
 SELECT DEPT_CODE
 FROM EMPLOYEE
-WHERE EMP_NAME = '노옹철'; --> D9인걸 알아냄
+WHERE EMP_NAME = '하이유'; --> D5인걸 알아냄
 
--- 2) 부서코드가 D9인 사원들 조회
+-- 2) 부서코드가 D5인 사원들 조회
 SELECT EMP_NAME
 FROM EMPLOYEE
-WHERE DEPT_CODE = 'D9';
+WHERE DEPT_CODE = 'D5';
 
 --> 위의 2가지 단계를 하나의 쿼리문으로 
 SELECT EMP_NAME
 FROM EMPLOYEE
 WHERE DEPT_CODE = (SELECT DEPT_CODE
                      FROM EMPLOYEE
-                    WHERE EMP_NAME = '노옹철');
+                    WHERE EMP_NAME = '하이유');
 
 -- 간단 서브쿼리 예시2.
 -- 전 사원의 평균급여보다 더 많은 급여를 받는 사원들 조회
@@ -73,19 +73,19 @@ FROM EMPLOYEE
 WHERE SALARY = (SELECT MIN(SALARY)
                   FROM EMPLOYEE);
 
--- 3) 노옹철 사원의 급여보다 더 많이 받는 사원들의 사번, 이름, 부서코드, 급여 조회
+-- 3) 하이유 사원의 급여보다 더 많이 받는 사원들의 사번, 이름, 부서코드, 급여 조회
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE
 WHERE SALARY > (SELECT SALARY
                   FROM EMPLOYEE
-                 WHERE EMP_NAME = '노옹철');
+                 WHERE EMP_NAME = '하이유');
 
 -->> 오라클
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY, DEPT_TITLE
 FROM EMPLOYEE, DEPARTMENT
 WHERE SALARY > (SELECT SALARY
                   FROM EMPLOYEE
-                 WHERE EMP_NAME = '노옹철')
+                 WHERE EMP_NAME = '하이유')
   AND DEPT_CODE = DEPT_ID;
 
 -->> ANSI
@@ -94,7 +94,7 @@ FROM EMPLOYEE
 JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID)
 WHERE SALARY > (SELECT SALARY
                   FROM EMPLOYEE
-                 WHERE EMP_NAME = '노옹철');
+                 WHERE EMP_NAME = '하이유');
 
 -- 4) 사수가 선동일인 사원들의 사번, 이름, 사수사번 조회 
 SELECT EMP_ID, EMP_NAME, MANAGER_ID
@@ -125,7 +125,7 @@ WHERE DEPT_CODE = (SELECT DEPT_CODE
 
 -- 6) 부서별 급여합이 가장 큰 부서의 부서코드, 급여합 조회
 -- 6_1) 먼저 부서별 급여합 중에서도 가장 큰 값 하나만 조회
-SELECT MAX(SUM(SALARY))
+SELECT MAX(SUM(SALARY)) -- 7행중 가장 큰 값 하나만 조회
 FROM EMPLOYEE
 GROUP BY DEPT_CODE; --> 17660000걸 알아냄
 
@@ -240,7 +240,7 @@ WHERE JOB_NAME = '차장'
 -->> 단일행 서브쿼리로 
 SELECT EMP_NAME, DEPT_CODE, JOB_CODE, HIRE_DATE
 FROM EMPLOYEE
-WHERE DEPT_CODE = (SELECT DEPT_cODE
+WHERE DEPT_CODE = (SELECT DEPT_CODE
                      FROM EMPLOYEE
                     WHERE EMP_NAME = '하이유') -- D5
   AND JOB_CODE = (SELECT JOB_CODE
@@ -285,7 +285,7 @@ FROM EMPLOYEE
 WHERE (JOB_CODE, SALARY) = ('J2', 1800000)
    OR (JOB_CODE, SALARY) = ('J7', 1380000)
    OR (JOB_CODE, SALARY) = ('J3', 2800000)
-   ...;
+   ...;  0
 
 -- 서브쿼리 적용해서
 SELECT EMP_ID, EMP_NAME, JOB_CODE, SALARY
@@ -294,7 +294,7 @@ WHERE (JOB_CODE, SALARY) IN (SELECT JOB_CODE, MIN(SALARY)
                               FROM EMPLOYEE
                              GROUP BY JOB_CODE);
 
--- 2) 각 부서별 최고급여를 받는 사원들의 사번, 사원명, 부서코드, 급여 
+-- 2) 각 부서별 최고급여를 받는 사원들의 사번, 사원명, 부서코드, 급여 -- 6개 조회 (NULL 포함되지않음)
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE
 WHERE (NVL(DEPT_CODE, '없음'), SALARY) IN (SELECT NVL(DEPT_CODE, '없음'), MAX(SALARY)
@@ -311,7 +311,7 @@ WHERE (NVL(DEPT_CODE, '없음'), SALARY) IN (SELECT NVL(DEPT_CODE, '없음'), MA
 
 /*
     5. 인라인뷰(INLINE-VIEW)
-    FROM 절에 서브쿼리를 작성하는거 
+    FROM 절에 서브쿼리를 작성하는 것
     
     서브쿼리를 수행한 결과를 마치 하나의 테이블처럼 사용
 */
@@ -324,7 +324,7 @@ FROM EMPLOYEE
 WHERE (SALARY + SALARY * NVL(BONUS, 0)) * 12 >= 30000000;
 
 
-SELECT EMP_NAME, 연봉
+SELECT EMP_NAME, 연봉, DEPT_CODE -- SALARY는 안됨 아래 테이블안에 없기 때문
   FROM (SELECT EMP_ID, EMP_NAME, (SALARY + SALARY * NVL(BONUS, 0)) * 12 "연봉", DEPT_CODE
           FROM EMPLOYEE)
  WHERE 연봉 >= 30000000;
@@ -348,7 +348,6 @@ FROM (SELECT EMP_NAME, SALARY, DEPT_CODE
 WHERE ROWNUM <= 5;
 
 -- 가장 최근에 입사한 사원 5명 조회 (사원명, 급여, 입사일)
-
 SELECT EMP_NAME, SALARY, HIRE_DATE
 FROM (
         SELECT *

@@ -47,15 +47,15 @@ FROM JOB;
 --    FROM절에 조회하고자하는 테이블들을 나열 (, 구분자로)
 --    WHERE절에 매칭시킬 컬럼(연결고리)에 대한 조건을 제시함
 
--- 1) 연결할 두 컬럼명이 다른 경우 (EMPLOYEE:DEPT_CODE / DEPARTMENT:DEPT_ID)
+-- 1) 연결할 두 컬럼명이 다른 경우 (EMPLOYEE:DEPT_CODE / DEPARTMENT:DEPT_ID)         
 -- 사번, 사원명, 부서코드, 부서명을 같이 조회
 SELECT EMP_ID, EMP_NAME, DEPT_ID, DEPT_TITLE
 FROM EMPLOYEE, DEPARTMENT
 WHERE DEPT_CODE = DEPT_ID;
 --> 일치하는 값이 없는 행은 조회에서 제외된거 확인 가능! 
---  DEPT_CODE가 NULL인 사원 조회X, 부서들 중 부서코드가 D3, D4, D7 조회X
+--  DEPT_CODE가 NULL인 사원 조회X, 부서들 중 부서코드가 D3, D4, D7 조회X               
 
--- 2) 연결할 두 컬럼명이 같을 경우 (EMPLOYEE:JOB_CODE / JOB:JOB_CODE)
+-- 2) 연결할 두 컬럼명이 같을 경우 (EMPLOYEE:JOB_CODE / JOB:JOB_CODE)               
 -- 사번, 사원명, 직급코드, 직급명
 SELECT *
 FROM EMPLOYEE, JOB
@@ -77,13 +77,13 @@ WHERE E.JOB_CODE = J.JOB_CODE;
 --   JOIN절에 같이 조회하고자하는 테이블 기술하고 뿐만 아니라 매칭시킬 컬럼에 대한 조건도 기술
 --   JOIN ON , JOIN USING
 
--- 1) 연결할 두 컬럼명이 다른 경우 (EMPLOYEE:DEPT_CODE / DEPARTMENT:DEPT_ID)
+-- 1) 연결할 두 컬럼명이 다른 경우 (EMPLOYEE:DEPT_CODE / DEPARTMENT:DEPT_ID)        
 --    JOIN ON으로만 가능!! 
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, DEPT_TITLE
 FROM EMPLOYEE
 /*INNER */JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID);
 
--- 2) 연결할 두 컬럼명이 동일할 경우 (EMPLOYEE:JOB_CODE / JOB:JOB_CODE)
+-- 2) 연결할 두 컬럼명이 동일할 경우 (EMPLOYEE:JOB_CODE / JOB:JOB_CODE)              
 SELECT EMP_ID, EMP_NAME, JOB_CODE, JOB_NAME
 FROM EMPLOYEE
 JOIN JOB ON (JOB_CODE = JOB_CODE);
@@ -104,10 +104,10 @@ SELECT EMP_ID, EMP_NAME, JOB_CODE, JOB_NAME
 FROM EMPLOYEE
 NATURAL JOIN JOB;
 
--- 추가적인 조건 제시 가능 
+-- 추가적인 조건 제시 가능                                                             
 -- 대리 직급의 사원들의 사번, 이름, 급여 조회
 -->> 오라클 전용 구문 
-SELECT EMP_ID, EMP_NAME, SALARY, JOB_NAME
+SELECT EMP_ID, EMP_NAME, SALARY
 FROM EMPLOYEE E, JOB J
 WHERE E.JOB_CODE = J.JOB_CODE
   AND JOB_NAME = '대리';
@@ -186,7 +186,7 @@ JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID);
 -- 부서 배치가 안된 2명의 사원 정보 조회 X
 -- 부서에 배정된 사원이 없는 부서 같은 경우도 조회 X
 
--- 1) LEFT OUTER JOIN : 두 테이블 중 왼편에 기술된 테이블을 기준으로 JOIN 
+-- 1) LEFT OUTER JOIN : 두 테이블 중 왼편에 기술된 테이블을 기준으로 JOIN                                              
 -->> ANSI구문
 SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
 FROM EMPLOYEE
@@ -211,10 +211,12 @@ FROM EMPLOYEE, DEPARTMENT
 WHERE DEPT_CODE(+) = DEPT_ID;
 
 -- 3) FULL [OUTER] JOIN : 두 테이블이 가진 모든 행을 조회할 수 있음 (단, 오라클전용구문으로 안됨)
+-->> ANSI 구문
 SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
 FROM EMPLOYEE
 FULL JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID); 
 
+-->> 오라클전용구문
 SELECT EMP_NAME, DEPT_TITLE, SALARY, SALARY*12
 FROM EMPLOYEE, DEPARTMENT
 WHERE DEPT_CODE(+) = DEPT_ID(+); -- 에러발생 
@@ -279,12 +281,12 @@ LEFT JOIN DEPARTMENT MD ON (M.DEPT_CODE = MD.DEPT_ID);
 */
 -->> 오라클
 SELECT EMP_NAME, DEPT_TITLE
-FROM EMPLOYEE, DEPARTMENT;  -- 23 * 9 => 207행 
+FROM EMPLOYEE, DEPARTMENT;  -- 23 * 9 => 207행 조회
 
 -->> ANSI
-SELECT EMP_NAME, DEPT_TITLE
+SELECT EMP_NAME, DEPT_TITLE 
 FROM EMPLOYEE
-CROSS JOIN DEPARTMENT;
+CROSS JOIN DEPARTMENT; -- 50행 
 
 --------------------------------------------------------------------------------
 

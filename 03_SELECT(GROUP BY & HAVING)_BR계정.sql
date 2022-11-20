@@ -5,7 +5,7 @@
 SELECT SUM(SALARY)
 FROM EMPLOYEE; --> 전체 사원들이 하나의 그룹으로 묶여서 총합 구함
 
-SELECT DEPT_CODE, SUM(SALARY) -- 에러발생
+SELECT DEPT_CODE, SUM(SALARY) -- 에러발생(단일행과 사용X)
 FROM EMPLOYEE;
 
 -- 각 부서별 총급여합
@@ -157,7 +157,7 @@ ORDER BY DEPT_CODE;
     
     - UNION     : 합집합(두 쿼리문 수행한 결과값을 더한 후 중복되는 값은 한번만 더해지도록) | OR
     - INTERSECT : 교집합(두 쿼리문 수행한 결과값에 중복된 결과값) | AND
-    - UNION ALL : 합집합 + 교집합 (두 쿼리문의 겨로가값을 무조건 더한 결과값 => 중복된 값이 두번 표현될 수 있음
+    - UNION ALL : 합집합 + 교집합 (두 쿼리문의 결과값을 무조건 더한 결과값 => 중복된 값이 두번 표현될 수 있음)
     - MINUS     : 차집합 (선행 쿼리의 결과값에서 후행 쿼리의 결과값을 뺀 나머지
 
 */
@@ -166,7 +166,7 @@ ORDER BY DEPT_CODE;
 -- 부서코드가 D5인 사원 또는 급여가 300만원 초과인 사원들 조회(사번, 이름, 부서코드, 급여)
 
 -- 부서코드가 D5인 사원들만
-SELECT EMP_ID, EMP_NAME, DEPT_DODE, SALARY
+SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE
 WHERE DEPT_CODE = 'D5'; -- 6개 행 (박나라, 하이유, 김해술, 심봉선, 윤은해, 대북혼)
 
@@ -184,11 +184,11 @@ FROM EMPLOYEE
 WHERE DEPT_CODE = 'D5' OR SALARY > 3000000;
 
 -- 2. INTERSECT (교집합)
--- 부서코드가 D5면서 급여마저가 300만 초과인 사원 조회
+-- 부서코드가 D5면서 급여가 300만 초과인 사원 조회
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE
 WHERE DEPT_CODE = 'D5' -- 6명
-INTERSECT 
+INTERSECT --> 3명만
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE
 WHERE SALARY > 3000000; -- 8명
@@ -239,7 +239,7 @@ UNION
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, HIRE_DATE -- SALARY 대신 HIRE_DATE 추가
 FROM EMPLOYEE
 WHERE SALARY > 3000000;
---> 컬럼의 갯수 뿐만 아니라 각 컬럼자리마다 동일한 타입으로 기술
+--> 컬럼의 갯수 뿐만 아니라 각 컬럼자리마다 동일한 타입으로 기술                          
 
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY "보너스또는급여"
 FROM EMPLOYEE
@@ -257,6 +257,6 @@ SELECT EMP_ID, EMP_NAME, DEPT_CODE, BONUS
 FROM EMPLOYEE
 WHERE SALARY > 3000000;
 ORDER BY EMP_NAME;
---> ORDER BY 절은 마지막에 기술
+--> ORDER BY 절은 마지막에 기술                                                        
 
 
