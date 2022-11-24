@@ -28,7 +28,7 @@ ALTER TABLE DEPT_COPY ADD LNAME VARCHAR2(20) DEFAULT '한국';
 SELECT * FROM DEPT_COPY;
 
 -- 1_2) 컬럼 수정 (MODIFY)
---      > 데이터타입 수정 : MODIFY 컬럼명 바꾸고자하는 데이터타입
+--      > 데이터타입 수정 : MODIFY 컬럼명 바꾸고자하는데이터타입
 --      > DEFAULT값 수정 : MODIFY 컬럼명 DEFAULT 바꾸고자하는기본값
 
 ALTER TABLE DEPT_COPY MODIFY DEPT_ID CHAR(3);
@@ -92,7 +92,7 @@ ALTER TABLE DEPT_COPY
 ALTER TABLE DEPT_COPY RENAME COLUMN DEPT_TITLE TO DEPT_NAME;
 
 -- 3_2) 제약조건명 변경 : RENAME CONSTRAINT 기존제약조건명 TO 바꿀제약조건명
-ALTER TABLE DEPT_COPY RENAME CONSTRAINT SYS_C007182 TO LID_NN;
+ALTER TABLE DEPT_COPY RENAME CONSTRAINT SYS_C007245 TO LID_NN;
 
 -- 3_3) 테이블명 변경 : RENAME [기존테이블명] TO 바꿀테이블명
 ALTER TABLE DEPT_COPY RENAME TO DEPT_TEST;
@@ -109,12 +109,3 @@ DROP TABLE DEPT_TEST;
 -- 방법1. 자식 테이블 먼저 삭제한 후 부모테이블 삭제하는 방법
 -- 방법2. DROP TABLE 테이블명 CASCADE CONSTRAINT;
 --       부모테이블만 삭제하는데 제약조건까지 같이 삭제하는 방법
-
-
-
-
-
-
-
-
-
