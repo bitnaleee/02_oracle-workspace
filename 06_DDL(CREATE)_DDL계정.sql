@@ -55,7 +55,7 @@ DROP TABLE MEMBER;
 -- 데이터 딕셔너리 : 다양한 객체들의 정보를 저장하고 있는 시스템 테이블들
 -- [참고] USER_TABLES : 이 사용자가 가지고 있는 테이블들의 전반적인 구조를 확인할 수 있는 시스템 테이블 
 SELECT * FROM USER_TABLES;
--- [참고] USER_TAB_COLUMNS : 이 사용자가 가지고 있는 
+-- [참고] USER_TAB_COLUMNS : 이 사용자가 가지고 있는 테이블들의 모든 컬럼의 구조를 확인할 수 있는 시스템 테이블
 SELECT * FROM USER_TAB_COLUMNS;
 
 /*
@@ -290,7 +290,7 @@ CREATE TABLE MEM_PRI2 (
     EMAIL VARCHAR2(50),
     PRIMARY KEY(MEM_NO, MEM_ID) --> 묶어서 PRIMARY KEY 제약조건부여 (복합키)
 );
-
+-- 복합키
 INSERT INTO MEM_PRI2
 VALUES(1, 'user01', 'pass01', '김제니', null, null, null);
 
@@ -303,6 +303,8 @@ VALUES(2, 'user02', 'pass03', '김로제', null, null, null);
 INSERT INTO MEM_PRI2
 VALUES(null, 'user02', 'pass03', '김로제', null, null, null);
 -- 복합키 각 컬럼에는 절대 null 허용하지 않음
+
+SELECT * FROM MEM_PRI2;
 
 -- 복합키 사용 예시 (어떤 회원이 어떤 상품을 언제 찜했는지에 대한 데이터를 보관하는 테이블)
 CREATE TABLE TB_LIKE(
@@ -342,16 +344,16 @@ CREATE TABLE MEM(
 );
 
 INSERT INTO MEM
-VALUES(1, 'user01', 'pass01', '홍길순', '여', null, null, null);
+VALUES(1, 'user01', 'pass01', '김제니', '여', null, null, null);
 
 INSERT INTO MEM
-VALUES(2, 'user02', 'pass02', '김말똥', null, null, null, 10);
+VALUES(2, 'user02', 'pass02', '김지수', null, null, null, 10);
 
 INSERT INTO MEM
-VALUES(3, 'user03', 'pass03', '강개순', null, null, null, 40);
+VALUES(3, 'user03', 'pass03', '김로제', null, null, null, 40);
 --> 유효한 회원등급번호가 아님에도 불구하고 잘 insert 되버림
 
-
+SELECT * FROM MEM;
 --------------------------------------------------------------------------------
 
 /*
@@ -383,27 +385,27 @@ CREATE TABLE MEM(
     --, FOREIGN KEY (GRADE_ID) REFERENCES MEM_GRADE(GRADE_CODE) -- 테이블레벨방식
 );
 
-DROP TABLE MEM;
-
 INSERT INTO MEM
-VALUES(1, 'user01', 'pass01', '홍길순', '여', null, null, null);
+VALUES(1, 'user01', 'pass01', '김제니', '여', null, null, null);
 --> 외래키 제약조건이 부여된 컬럼에 기본적으로 NULL 허용됨
 
 INSERT INTO MEM
-VALUES(2, 'user02', 'pass02', '김말똥', null, null, null, 10);
+VALUES(2, 'user02', 'pass02', '김지수', null, null, null, 10);
 
 
 INSERT INTO MEM
-VALUES(3, 'user03', 'pass03', '강개순', null, null, null, 40);
+VALUES(3, 'user03', 'pass03', '김로제', null, null, null, 40);
 --> PARENT KEY를 찾을 수 없다는 오류 발생
 
 -- MEM_GRADE(부모테이블) --|------<- MEM(자식테이블)
 
 INSERT INTO MEM
-VALUES(3, 'user03', 'pass03', '강개순', null, null, null, 30);
+VALUES(3, 'user03', 'pass03', '김로제', null, null, null, 30);
 
 INSERT INTO MEM
-VALUES(4, 'user04', 'pass04', '홍길동', null, null, null, 10);
+VALUES(4, 'user04', 'pass04', '라리사', null, null, null, 10);
+
+SELECT * FROM MEM;
 
 --> 부모테이블(MEM_GRADE)로부터 데이터값 삭제시 문제 발생
 -- 데이터 삭제 : DELETE FROM 테이블명 WHERE 조건;
@@ -421,6 +423,7 @@ WHERE GRADE_CODE = 20;
 --> 자식테이블에 이미 사용되고 있는 값이 있을 경우
 -- 부모테이블로부터 삭제가 안되는 "삭제 제한" 옵션이 걸려있음 (기본적으로)
 
+SELECT * FROM MEM_GRADE;
 --------------------------------------------------------------------------------
 
 /*
@@ -433,6 +436,7 @@ WHERE GRADE_CODE = 20;
     - ON DELETE CASCADE : 부모데이터 삭제시 해당 데이터를 쓰고 있는 자식데이터도 같이 삭제 
     
 */
+DROP TABLE MEM;
 
 CREATE TABLE MEM(
     MEM_NO NUMBER PRIMARY KEY,
@@ -446,16 +450,18 @@ CREATE TABLE MEM(
 );
 
 INSERT INTO MEM
-VALUES(1, 'user01', 'pass01', '홍길순', '여', null, null, null);
+VALUES(1, 'user01', 'pass01', '김제니', '여', null, null, null);
 
 INSERT INTO MEM
-VALUES(2, 'user02', 'pass02', '김말똥', null, null, null, 10);
+VALUES(2, 'user02', 'pass02', '김지수', null, null, null, 10);
 
 INSERT INTO MEM
-VALUES(3, 'user03', 'pass03', '강개순', null, null, null, 30);
+VALUES(3, 'user03', 'pass03', '김로제', null, null, null, 30);
 
 INSERT INTO MEM
-VALUES(4, 'user04', 'pass04', '홍길동', null, null, null, 10);
+VALUES(4, 'user04', 'pass04', '라리사', null, null, null, 10);
+
+SELECT * FROM MEM;
 
 -- 10번 등급 삭제
 DELETE FROM MEM_GRADE
@@ -478,16 +484,16 @@ CREATE TABLE MEM(
 );
 
 INSERT INTO MEM
-VALUES(1, 'user01', 'pass01', '홍길순', '여', null, null, null);
+VALUES(1, 'user01', 'pass01', '김제니', '여', null, null, null);
 
 INSERT INTO MEM
-VALUES(2, 'user02', 'pass02', '김말똥', null, null, null, 10);
+VALUES(2, 'user02', 'pass02', '김지수', null, null, null, 10);
 
 INSERT INTO MEM
-VALUES(3, 'user03', 'pass03', '강개순', null, null, null, 30);
+VALUES(3, 'user03', 'pass03', '김로제', null, null, null, 30);
 
 INSERT INTO MEM
-VALUES(4, 'user04', 'pass04', '홍길동', null, null, null, 10);
+VALUES(4, 'user04', 'pass04', '라리사', null, null, null, 10);
 
 -- 10번 등급 삭제
 DELETE FROM MEM_GRADE
@@ -521,8 +527,82 @@ INSERT INTO MEMBER VALUES(1, '김제니', 20, '운동', '22/10/30');
 INSERT INTO MEMBER VALUES(2, '김지수', NULL, NULL, NULL);
 INSERT INTO MEMBER VALUES(3, '김로제', DEFAULT, DEFAULT, DEFAULT);
 
+SELECT * FROM MEMBER;
+
 -- 방법2. 테이블의 특정 컬럼만 지정해서 값을 제시하는 방법
 --       선택되지않은 컬럼에는 기본적으로 NULL이 들어감
 --       => (단, DEFAULT값이 부여되어있을경우 DEFAULT값이 들어감)
 --       INSERT INTO 테이블명(컬럼명, 컬럼명) VALUES(값, 값); 
 INSERT INTO MEMBER(MEM_NO, MEM_NAME) VALUES(4,'라리사');
+
+--------------------------------------------------------------------------------
+
+---------------------- 위는 DDL 계정 여기서부터는 BR 계정 --------------------------
+
+/*
+    < SUBQUERY >를 이용한 테이블 생성
+    테이블 복사뜨는 개념
+    
+    [표현법]
+    CREATE TABLE 테이블명
+    AS 서브쿼리;
+    
+*/
+-- EMPLOYEE 테이블을 그대로 복제한 새로운 테이블 생성
+CREATE TABLE EMPLOYEE_COPY
+AS SELECT * 
+     FROM EMPLOYEE;
+
+SELECT * FROM EMPLOYEE_COPY;
+-- 컬럼, 데이터값, 제약조건 같은 경우 NOT NULL만 복사됨
+
+-- 데이터는 필요없고 구조만 복사하고 싶을 경우 
+CREATE TABLE EMPLOYEE_COPY2
+AS SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+     FROM EMPLOYEE
+    WHERE 1 = 0;
+
+SELECT * FROM EMPLOYEE_COPY2;
+
+CREATE TABLE EMPLOYEE_COPY3
+AS SELECT EMP_ID, EMP_NAME, SALARY, SALARY*12 "연봉" -- 산술이라 별칭을 지어줘야함
+     FROM EMPLOYEE;
+-- alias 별칭 
+--> 서브쿼리의 SELECT절에 산술식 또는 함수식 기술된 경우 반드시 별칭 지정해야됨
+SELECT * FROM EMPLOYEE_COPY3;
+
+SELECT EMP_NAME, 연봉
+FROM EMPLOYEE_COPY3;
+
+--------------------------------------------------------------------------------
+
+/*
+    * 테이블 다 생성한 후에 뒤늦게 제약조건 추가
+
+    ALTER TABLE 테이블명 변경할내용;
+    
+    >> 변경할 내용
+    - PRIMARY KEY : ADD PRIMARY KEY(컬럼명);
+    - FOREIGN KEY : ADD FOREIGN KEY(컬럼명) REFERENCES 참조할테이블[(참조할컬럼)] [삭제옵션];
+    - UNIQUE      : ADD UNIQUE(컬럼명);
+    - CHECK       : ADD CHECK(컬럼에 대한 조건식);
+    - NOT NULL    : MODIFY 컬럼명 NOT NULL; -- NULL도 가능
+    
+*/
+
+-- EMPLOYEE_COPY 테이블에 PRIMARY KEY 제약조건 추가 (EMP_ID)
+
+ALTER TABLE EMPLOYEE_COPY ADD PRIMARY KEY(EMP_ID);
+
+SELECT * FROM EMPLOYEE;
+SELECT * FROM DEPARTMENT;
+
+-- EMPLOYEE 테이블에 DEPT_CODE에 외래키 제약조건 추가(참조하는테이블 : DEPARTMENT(DEPT_ID))
+ALTER TABLE EMPLOYEE ADD FOREIGN KEY(DEPT_CODE) REFERENCES DEPARTMENT; --(DEPT_ID)
+
+-- EMPLOYEE 테이블에 JOB_CODE에 외래키 제약조건 추가 (JOB 테이블 참조)
+ALTER TABLE EMPLOYEE ADD FOREIGN KEY(JOB_CODE) REFERENCES JOB;
+
+-- DEPARTMENT 테이블에 LOCATION_ID에 외래키 제약조건 추가 (LOCATION 테이블 참조)
+ALTER TABLE DEPARTMENT ADD FOREIGN KEY(LOCATION_ID) REFERENCES LOCATION; --(LOCAL_CODE);
+
