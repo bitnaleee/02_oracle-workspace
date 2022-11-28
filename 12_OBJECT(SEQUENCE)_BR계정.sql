@@ -75,7 +75,7 @@ SELECT * FROM USER_SEQUENCES;
     [CYCLE|NOCYCLE]
     [NOCACHE|CACHE 바이트크기];
     
-    * START WITH 변경불가능
+    * START WITH 변경 불가능
 
 */
 
@@ -108,7 +108,7 @@ INSERT
 VALUES 
         (
         SEQ_EID.NEXTVAL
-        , '홍길동'
+        , '김제니'
         , '111111-1111111'
         , 'J7'
         , SYSDATE

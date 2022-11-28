@@ -1,0 +1,152 @@
+-- 실습문제 (DDL계정에서 풀 것) --
+-- 도서관리 프로그램을 만들기 위한 테이블들 만들기 --
+-- 이때, 제약조건에 이름을 부여할 것 
+--      각 컬럼에 주석달기
+
+
+
+-- 1. 출판사들에 대한 데이터를 담기위한 출판사 테이블(TB_PUBLISHER) 
+-- 컬럼 : PUB_NO(출판사번호) -- 기본키(PUBLISHER_PK)
+--         PUB_NAME(출판사명) -- NOT NULL(PUBLISHER_NN)
+--         PHONE(출판사전화번호) -- 제약조건 없음
+CREATE TABLE TB_PUBLISHER(
+    PUB_NO NUMBER,
+    PUB_NAME VARCHAR2(20) CONSTRAINT PUBLISHER_NN NOT NULL,
+    PHONE VARCHAR2(20),
+    CONSTRAINT PUBLISHER_PK PRIMARY KEY(PUB_NO)    
+);
+
+COMMENT ON COLUMN TB_PUBLISHER.PUB_NO IS '출판사번호';
+COMMENT ON COLUMN TB_PUBLISHER.PUB_NAME IS '출판사명';
+COMMENT ON COLUMN TB_PUBLISHER.PHONE IS '전화번호';
+
+-- 3개 정도의 샘플 데이터 추가하기
+INSERT INTO TB_PUBLISHER VALUES(1, '해커스', '02-1111-2222');
+INSERT INTO TB_PUBLISHER VALUES(2, 'YBM', '02-3333-4444');
+INSERT INTO TB_PUBLISHER VALUES(3, '아고다', '02-1111-6666');
+
+SELECT * FROM TB_PUBLISHER;
+
+-- 2. 도서들에 대한 데이터를 담기위한 도서 테이블(TB_BOOK)
+-- 컬럼 : BK_NO (도서번호) -- 기본키(BOOK_PK)
+--         BK_TITLE (도서명) -- NOT NULL(BOOK_NN_TITLE)
+--         BK_AUTHOR(저자명) -- NOT NULL(BOOK_NN_AUTHOR)
+--         BK_PRICE(가격)
+--         BK_PUB_NO(출판사번호) -- 외래키(BOOK_FK) (TB_PUBLISHER 테이블을 참조하도록)
+--                                           이때 참조하고 있는 부모데이터 삭제 시 자식 데이터도 삭제 되도록 옵션 지정
+CREATE TABLE TB_BOOK(
+    BK_NO NUMBER,
+    BK_TITLE VARCHAR2(100) CONSTRAINT BOOK_NN_TITLE NOT NULL,
+    BK_AUTHOR VARCHAR2(20) CONSTRAINT BOOK_NN_AUTHOR NOT NULL,
+    BK_PRICE NUMBER,
+    BK_PUB_NO NUMBER,
+    CONSTRAINT BOOK_PK PRIMARY KEY(BK_NO),
+    CONSTRAINT BOOK_FK FOREIGN KEY(BK_PUB_NO) REFERENCES TB_PUBLISHER ON DELETE CASCADE
+);
+
+COMMENT ON COLUMN TB_BOOK.BK_NO IS '도서번호';
+COMMENT ON COLUMN TB_BOOK.BK_TITLE IS '도서명';
+COMMENT ON COLUMN TB_BOOK.BK_AUTHOR IS '저자명';
+COMMENT ON COLUMN TB_BOOK.BK_PRICE IS '가격';
+COMMENT ON COLUMN TB_BOOK.BK_PUB_NO IS '출판사번호';
+
+-- 5개 정도의 샘플 데이터 추가하기
+INSERT INTO TB_BOOK VALUES (1, '해리포터와 비밀의 방', '조앤롤링', 13000, 1);
+INSERT INTO TB_BOOK VALUES (2, '마시멜로 이야기', '호아킴', 10000, 2);
+INSERT INTO TB_BOOK VALUES (3, '달러구트의 꿈 백화점', '이미예', 14000, 2);
+INSERT INTO TB_BOOK VALUES (4, '데미안', '헤르만 헤세', 15000, 1);
+INSERT INTO TB_BOOK VALUES (5, '부자 아빠 가난한 아빠', '로버트', 20000, 3);
+
+-- 3. 회원에 대한 데이터를 담기위한 회원 테이블 (TB_MEMBER)
+-- 컬럼명 : MEMBER_NO(회원번호) -- 기본키(MEMBER_PK)
+--            MEMBER_ID(아이디)   -- 중복금지(MEMBER_UQ)
+--            MEMBER_PWD(비밀번호) -- NOT NULL(MEMBER_NN_PWD)
+--            MEMBER_NAME(회원명) -- NOT NULL(MEMBER_NN_NAME)
+--            GENDER(성별)        -- 'M' 또는 'F'로 입력되도록 제한(MEMBER_CK_GEN)
+--            ADDRESS(주소)       
+--            PHONE(연락처)       
+--            STATUS(탈퇴여부)     -- 기본값으로 'N' 으로 지정, 그리고 'Y' 혹은 'N'으로만 입력되도록 제약조건(MEMBER_CK_STA)
+--            ENROLL_DATE(가입일)  -- 기본값으로 SYSDATE, NOT NULL 제약조건(MEMBER_NN_EN)
+CREATE TABLE TB_MEMBER(
+    MEMBER_NO NUMBER CONSTRAINT MEMBER_PK PRIMARY KEY,
+    MEMBER_ID VARCHAR2(20) CONSTRAINT MEMBER_UQ UNIQUE,
+    MEMBER_PWD VARCHAR2(30) CONSTRAINT MEMBER_NN_PWD NOT NULL,
+    MEMBER_NAME VARCHAR2(20) CONSTRAINT MEMBER_NN_NAME NOT NULL,
+    GENDER VARCHAR2(1) CONSTRAINT MEMBER_CK_GEN CHECK(GENDER IN ('M', 'F')),
+    ADDRESS VARCHAR2(100),
+    PHONE VARCHAR2(20),
+    STATUS VARCHAR2(1) DEFAULT 'N' CONSTRAINT MEMBER_CK_STA CHECK(STATUS IN ('Y', 'N')),
+    ENROLL_DATE DATE DEFAULT SYSDATE CONSTRAINT MEMBER_NN_EN NOT NULL
+);
+
+COMMENT ON COLUMN TB_MEMBER.MEMBER_NO IS '회원번호';
+COMMENT ON COLUMN TB_MEMBER.MEMBER_ID IS '아이디';
+COMMENT ON COLUMN TB_MEMBER.MEMBER_PWD IS '비밀번호';
+COMMENT ON COLUMN TB_MEMBER.MEMBER_NAME IS '회원명';
+COMMENT ON COLUMN TB_MEMBER.GENDER IS '성별';
+COMMENT ON COLUMN TB_MEMBER.ADDRESS IS '주소';
+COMMENT ON COLUMN TB_MEMBER.PHONE IS '연락처';
+COMMENT ON COLUMN TB_MEMBER.STATUS IS '탈퇴여부';
+COMMENT ON COLUMN TB_MEMBER.ENROLL_DATE IS '가입일';
+
+-- 5개 정도의 샘플 데이터 추가하기
+INSERT INTO TB_MEMBER VALUES(1, 'user01', 'pass01', '김제니', 'F', '서울시 강남구', '010-1111-2222', DEFAULT, DEFAULT);
+INSERT INTO TB_MEMBER VALUES(2, 'user02', 'pass02', '김로제', 'F', '서울시 서초구', '010-3333-4444', DEFAULT, DEFAULT);
+INSERT INTO TB_MEMBER VALUES(3, 'user03', 'pass03', '김지수', 'M', '서울시 양천구', '010-5555-6666', DEFAULT, DEFAULT);
+INSERT INTO TB_MEMBER VALUES(4, 'user04', 'pass04', '라리사', 'F', '서울시 관악구', '010-7777-8888', DEFAULT, DEFAULT);
+INSERT INTO TB_MEMBER VALUES(5, 'user05', 'pass05', '카즈하', 'M', '인천시 구로구', '010-6666-7777', DEFAULT, DEFAULT);
+
+SELECT * FROM TB_MEMBER;
+
+-- 4. 어떤 회원이 어떤 도서를 대여했는지에 대한  대여목록 테이블(TB_RENT)
+-- 컬럼 : RENT_NO(대여번호) -- 기본키(RENT_PK)
+--         RENT_MEM_NO(대여회원번호) -- 외래키(RENT_FK_MEM)  TB_MEMBER와 참조하도록
+--                                     이때 부모 데이터 삭제시 자식 데이터 값이 NULL이 되도록 옵션 설정
+--         RENT_BOOK_NO(대여도서번호) -- 외래키(RENT_FK_BOOK)  TB_BOOK와 참조하도록
+--                                      이때 부모 데이터 삭제시 자식 데이터 값이 NULL값이 되도록 옵션 설정
+--         RENT_DATE(대여일) -- 기본값 SYSDATE
+CREATE TABLE TB_RENT(
+    RENT_NO NUMBER CONSTRAINT RENT_PK PRIMARY KEY,
+    RENT_MEM_NO NUMBER CONSTRAINT RENT_FK_MEM REFERENCES TB_MEMBER ON DELETE SET NULL,
+    RENT_BOOK_NO NUMBER CONSTRAINT RENT_FK_BOOK REFERENCES TB_BOOK ON DELETE SET NULL,
+    RENT_DATE DATE DEFAULT SYSDATE
+);
+
+COMMENT ON COLUMN TB_RENT.RENT_NO IS '대여번호';
+COMMENT ON COLUMN TB_RENT.RENT_MEM_NO IS '대여회원번호';
+COMMENT ON COLUMN TB_RENT.RENT_BOOK_NO IS '대여도서번호';
+COMMENT ON COLUMN TB_RENT.RENT_DATE IS '대여일';
+
+-- 샘플데이터 3개 정도  추가하기
+INSERT INTO TB_RENT VALUES(1, 1, 2, DEFAULT);
+INSERT INTO TB_RENT VALUES(2, 1, 3, DEFAULT);
+INSERT INTO TB_RENT VALUES(3, 2, 1, DEFAULT);
+
+SELECT * FROM TB_RENT;  --> 이거만 보면 어떤 회원이 어떤 도서를 대여했는지 정확히 파악하기 힘듦! (근데 조인하면 됨!!)
+
+-- 답안에 있는 추가 내용
+-- 만일 전체도서의 도서번호, 도서명, 저자명, 가격, 출판사명, 출판사전화번호를 조회하고자 할때 
+SELECT BK_NO, BK_TITLE, BK_AUTHOR, BK_PRICE, PUB_NAME, PHONE
+FROM TB_BOOK
+JOIN TB_PUBLISHER ON(BK_PUB_NO = PUB_NO);
+
+-- 만일 어떤회원이 어떤도서를 어느날짜에 대여했는지 전체목록을 조회하고자 할때
+-- 이때 회원명, 도서명, 대여일 조회하고자 할때
+SELECT MEMBER_NAME, BK_TITLE, RENT_DATE
+FROM TB_RENT
+JOIN TB_MEMBER ON (RENT_MEM_NO = MEMBER_NO)
+JOIN TB_BOOK ON (RENT_BOOK_NO = BK_NO);
+
+-- 근데 그 중에서 2번 도서를 대여한 회원의 이름, 아이디, 대여일, 반납예정일(대여일 + 7일)을 조회하고자 할 때
+SELECT MEMBER_NAME, MEMBER_ID, RENT_DATE, RENT_DATE + 7 반납예정일
+FROM TB_RENT
+JOIN TB_MEMBER ON (RENT_MEM_NO = MEMBER_NO)
+WHERE RENT_BOOK_NO = 2;
+
+
+-- 회원번호가 1번인 회원이 대여한 도서들의 도서명, 출판사명, 대여일, 반납예정일을 조회하시오
+SELECT BK_TITLE, PUB_NAME, RENT_DATE, RENT_DATE + 7 반납예정일
+FROM TB_RENT
+JOIN TB_BOOK ON(RENT_BOOK_NO = BK_NO)
+JOIN TB_PUBLISHER ON(BK_PUB_NO = PUB_NO)
+WHERE RENT_MEM_NO = 1;

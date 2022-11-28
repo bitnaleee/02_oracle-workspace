@@ -14,7 +14,7 @@ INSERT INTO TEST VALUES(10, '안녕');
 -- BR 계정의 EMPLOYEE테이블에 접근해서 조회할 수 있는 권한 없음 
 -- 4. SELECT ON BR.EMPLOYEE 권한 부여받기
 SELECT *
-FROM BR.EMPLOYEE;
+FROM BR.EMPLOYEE; -- 다른계정에 있는 테이블 조회하기
 -- 5. INSERT ON BR.DEPARTMENT 권한 부여받기
 INSERT INTO BR.DEPARTMENT VALUES('D0', '회계부', 'L1');
 
