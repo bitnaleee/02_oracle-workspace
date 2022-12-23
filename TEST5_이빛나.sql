@@ -73,7 +73,10 @@ CREATE TABLE TB_REVIEW (
 
 -- 추가 제약조건
 -- 리뷰평점에는 1이상 5이하의 숫자만 들어갈 수 있도록 제한
+ALTER TABLE TB_REVIEW ADD CHECK(RATING BETWEEN 1 AND 5);
+/* 오답 : 4.5같은 실수를 넣을 수 없다
 ALTER TABLE TB_REVIEW ADD CHECK(RATING IN (1, 2, 3, 4, 5));
+*/
 
 -- 2. 아래의 데이터 정보를 확인하여 각 테이블에 INSERT 하는 구문들도 이어서 작성하시오.
 --    이 때 등록일, 회원가입일 등 날짜 관련한 데이터는 그냥 SYSDATE로 하시오.
@@ -109,21 +112,41 @@ JOIN TB_LIKE USING (PRO_CODE)
 WHERE MEM_NO = 30001;
 
 -- 2) PRO_001 상품에 대해 찜한 횟수 조회
+SELECT COUNT(*)
+FROM TB_LIKE
+WHERE PRO_CODE = 'PRO_001';
+
+/* 오답 : 불필요한 JOIN
 SELECT COUNT(PRO_CODE)"찜한 횟수"
 FROM TB_PRODUCT
 JOIN TB_LIKE USING (PRO_CODE)
 WHERE PRO_CODE = 'PRO_001';
+*/
 
 -- 3) 전체 리뷰들의 리뷰번호, 리뷰내용, 평점, 상품명, 작성자회원아이디, 작성일(XXXX-XX-XX 형식) 조회
 --    단, 리뷰번호 내림차순으로 정렬하여 최신글이 먼저 조회되도록 하시오.
+SELECT REVIEW_NO, REVIEW_CONTENT, RATING, PRO_NAME, MEM_ID, TO_CHAR(REGIST_DATE, 'YYYY-MM-DD') "작성일"
+FROM TB_REVIEW R
+JOIN TB_MEMBER M ON (R.MEM_NO = M.MEM_NO)
+JOIN TM_PRODUCT P ON (P.PRO_CODE = P.PRO_CODE)
+ORDER
+   BY REVEW_NO DESC;
+
+/* 오답 : TB_REVIEW 테이블과 TB_PRODUCT 테이블 JOIN시 잘못된 컬럼으로 매칭하기 때문에 조회결과가 중복
 SELECT REVIEW_NO, REVIEW_CONTENT, RATING, PRO_NAME, MEM_ID, TO_CHAR(REGIST_DATE, 'YYYY"-"MM"-"DD')
 FROM TB_REVIEW
 LEFT JOIN TB_MEMBER USING(MEM_NO)
 LEFT JOIN TB_PRODUCT USING(REGIST_DATE)
 ORDER BY REVIEW_NO DESC;
-
+*/
 -- 4) PRO_003 상품의 리뷰 평균 평점을 조회
 --    단, 무조건 소수점 아래 한자리까지 표현될 수 있도록 하시오 (예를 들어 평균평점이 4일때도 4.0으로 조회될 수 있도록)
+SELECT TO_CHAR(AVG(RATING), '0.0')
+FROM TB_REVIEW
+WHERE PRO_CODE = 'PRO_003';
+
+/* 오답
 SELECT AVG(RATING* 1.0)
 FROM TB_REVIEW
 WHERE PRO_CODE = 'PRO_003';
+*/
